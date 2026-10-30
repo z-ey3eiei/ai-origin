@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { oneoriginWordmark } from "@/lib/ecosystem";
+import { Ecosystem } from "./ecosystem";
 import {
   ActionList,
   ActionMenu,
   Button,
   IconButton,
-  Label,
   NavList,
   Stack,
   Text,
@@ -36,7 +38,7 @@ import {
 } from "@primer/octicons-react";
 import type { Section } from "@/lib/types";
 import { useModels, useWorkspace } from "@/lib/client";
-import { OriginMark, StatusBadge } from "./shared";
+import { StatusBadge } from "./shared";
 import { Overview } from "./overview";
 import { Playground } from "./playground";
 import {
@@ -76,6 +78,12 @@ const cloudOpsNavigation = [
 ] as const;
 const buildAndDeployNavigation = [
   {
+    id: "ecosystem",
+    label: "Tools & projects",
+    icon: CommandPaletteIcon,
+    href: "/ecosystem",
+  },
+  {
     id: "generative",
     label: "Generative UI",
     icon: NorthStarIcon,
@@ -109,6 +117,7 @@ const titles: Record<Section, string> = {
   infrastructure: "Infrastructure",
   settings: "Settings",
   docs: "Documentation",
+  ecosystem: "Tools & projects",
 };
 
 type NavigationItem = (typeof navigation)[number];
@@ -196,13 +205,16 @@ export function WorkspaceShell({ section }: { section: Section }) {
   };
   const sidebar = (
     <>
-      <a href="/" className="brand">
-        <OriginMark />
-        <span>
-          ai<span className="brand-dash">—</span>origin
-          <span className="brand-period">.</span>
-        </span>
-        <Label className="brand-label">BETA</Label>
+      <a href="/" className="brand" aria-label="ONEORIGIN home">
+        <Image
+          src={oneoriginWordmark}
+          alt="ONEORIGIN"
+          width={180}
+          height={60}
+          unoptimized
+          priority
+          className="brand-wordmark"
+        />
       </a>
       <div className="workspace-switcher">
         <ActionMenu>
@@ -364,6 +376,8 @@ export function WorkspaceShell({ section }: { section: Section }) {
             <Infrastructure />
           ) : section === "settings" ? (
             <Settings />
+          ) : section === "ecosystem" ? (
+            <Ecosystem />
           ) : (
             <Documentation />
           )}
@@ -392,7 +406,7 @@ export function WorkspaceShell({ section }: { section: Section }) {
         </nav>
         <footer className="page-footer">
           <span>
-            <span className="status-dot" /> AI Origin workspace
+            <span className="status-dot" /> ONEORIGIN workspace
           </span>
           <Stack direction="horizontal" gap="normal">
             <Text>Built with Next.js · Powered by AWS</Text>
@@ -400,7 +414,7 @@ export function WorkspaceShell({ section }: { section: Section }) {
               href="https://github.com/z-ey3eiei/ai-origin"
               target="_blank"
               rel="noreferrer"
-              aria-label="AI Origin on GitHub"
+              aria-label="ONEORIGIN on GitHub"
             >
               <MarkGithubIcon size={16} />
             </a>
@@ -410,7 +424,7 @@ export function WorkspaceShell({ section }: { section: Section }) {
       </div>
       {mobileOpen && (
         <Dialog
-          title="AI Origin navigation"
+          title="ONEORIGIN navigation"
           onClose={() => setMobileOpen(false)}
         >
           <Stack direction="vertical" gap="normal">

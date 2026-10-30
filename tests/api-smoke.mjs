@@ -3,6 +3,26 @@ import assert from "node:assert/strict";
 const base = process.env.TEST_BASE_URL || "http://localhost:3000";
 const request = (path, options) => fetch(`${base}${path}`, options);
 
+const ecosystem = await request("/ecosystem", { redirect: "manual" });
+assert.equal(
+  ecosystem.status,
+  200,
+  "Tools hub must open without a login redirect",
+);
+const ecosystemHtml = await ecosystem.text();
+assert.match(ecosystemHtml, /Tools &amp; projects/);
+for (const repository of [
+  "developer-devstack/devstack.bid",
+  "developer-devstack/aibotq-site",
+  "examplessdk-lgtm/one.origin",
+  "z-ey3eiei/ai-origin",
+]) {
+  assert(ecosystemHtml.includes(`https://github.com/${repository}`));
+}
+assert.match(ecosystemHtml, /External link/);
+assert.match(ecosystemHtml, /Before production/);
+assert.match(ecosystemHtml, /Export JSON/);
+
 const models = await (await request("/api/models")).json();
 assert(models.models.length > 0, "Live model catalog must contain models");
 assert(models.models.every((model) => model.id && model.name));
@@ -62,7 +82,7 @@ assert(
 );
 
 console.log(
-  "PASS: live catalog, validation, request limits, origin protection, private cookies, and infrastructure status.",
+  "PASS: public tools hub and repository links, live catalog, validation, request limits, origin protection, private cookies, and infrastructure status.",
 );
 console.log(
   "These checks do not run paid inference, write AWS records, or prove production readiness.",

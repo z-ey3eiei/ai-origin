@@ -5,12 +5,12 @@ import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: {
-    default: "AI Origin — Your AI, in one place",
-    template: "%s | AI Origin",
+    default: "ONEORIGIN — Developer workspace",
+    template: "%s | ONEORIGIN",
   },
   description:
     "The developer workspace for multi-model AI. Compare streaming responses, ground answers in your knowledge, and observe your AWS-powered AI stack.",
-  applicationName: "AI Origin",
+  applicationName: "ONEORIGIN",
   robots: { index: false, follow: false },
 };
 
@@ -18,6 +18,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "dark",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({

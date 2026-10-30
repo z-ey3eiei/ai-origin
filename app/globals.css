@@ -18,7 +18,20 @@
 @import "@primer/primitives/dist/css/functional/themes/dark.css";
 @import "@primer/primitives/dist/css/functional/themes/dark-dimmed.css";
 
+@font-face {
+  font-family: "Noto Sans Thai";
+  src: url("/fonts/noto-sans-thai.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC;
+}
+
 :root {
+  --fontStack-system:
+    "Noto Sans Thai", "Mona Sans VF", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji";
   color-scheme: dark;
   --origin-canvas: #0b1018;
   --origin-panel: rgba(14, 21, 32, 0.9);

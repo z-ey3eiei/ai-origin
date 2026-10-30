@@ -7,7 +7,8 @@ export type Section =
   | "logs"
   | "infrastructure"
   | "settings"
-  | "docs";
+  | "docs"
+  | "ecosystem";
 
 export interface ModelInfo {
   id: string;

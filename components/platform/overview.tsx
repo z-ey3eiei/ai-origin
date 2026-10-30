@@ -207,8 +207,8 @@ export function Overview() {
             >
               Start building
             </Button>
-            <a href="/docs" className="text-link">
-              Explore the platform <ArrowUpRightIcon size={14} />
+            <a href="/ecosystem" className="text-link">
+              Tools &amp; projects <ArrowUpRightIcon size={14} />
             </a>
           </Stack>
         </Stack>
