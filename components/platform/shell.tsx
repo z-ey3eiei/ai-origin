@@ -49,7 +49,7 @@ import {
   GenerativeWorkspace,
 } from "./workspace-pages";
 
-const navigation = [
+const developerNavigation = [
   { id: "overview", label: "Overview", icon: HomeIcon, href: "/" },
   {
     id: "playground",
@@ -58,17 +58,13 @@ const navigation = [
     href: "/playground",
   },
   { id: "models", label: "Model catalog", icon: CpuIcon, href: "/models" },
+] as const;
+const cloudOpsNavigation = [
   {
     id: "knowledge",
     label: "Knowledge base",
     icon: DatabaseIcon,
     href: "/knowledge",
-  },
-  {
-    id: "generative",
-    label: "Generative UI",
-    icon: NorthStarIcon,
-    href: "/generative",
   },
   { id: "logs", label: "Request logs", icon: RowsIcon, href: "/logs" },
   {
@@ -78,6 +74,31 @@ const navigation = [
     href: "/infrastructure",
   },
 ] as const;
+const buildAndDeployNavigation = [
+  {
+    id: "generative",
+    label: "Generative UI",
+    icon: NorthStarIcon,
+    href: "/generative",
+  },
+  {
+    id: "docs",
+    label: "Deployment guide",
+    icon: BookIcon,
+    href: "/docs",
+  },
+] as const;
+const navigation = [
+  ...developerNavigation,
+  ...cloudOpsNavigation,
+  ...buildAndDeployNavigation,
+] as const;
+const navigationGroups = [
+  { label: "DEVELOPER", items: developerNavigation },
+  { label: "CLOUD OPS", items: cloudOpsNavigation },
+  { label: "BUILD & DEPLOY", items: buildAndDeployNavigation },
+] as const;
+const gitRepositoryUrl = "https://github.com/z-ey3eiei/ai-origin";
 const titles: Record<Section, string> = {
   overview: "Overview",
   playground: "Playground",
@@ -89,6 +110,43 @@ const titles: Record<Section, string> = {
   settings: "Settings",
   docs: "Documentation",
 };
+
+type NavigationItem = (typeof navigation)[number];
+
+function NavigationGroup({
+  label,
+  items,
+  section,
+}: {
+  label: string;
+  items: readonly NavigationItem[];
+  section: Section;
+}) {
+  return (
+    <div className="navigation-group">
+      <Text className="nav-caption">{label}</Text>
+      <NavList aria-label={`${label} navigation`} className="main-navigation">
+        {items.map((item) => (
+          <NavList.Item
+            key={item.id}
+            href={item.href}
+            aria-current={section === item.id ? "page" : undefined}
+          >
+            <NavList.LeadingVisual>
+              <item.icon />
+            </NavList.LeadingVisual>
+            {item.label}
+            {item.id === "generative" && (
+              <NavList.TrailingVisual>
+                <span className="new-tag">NEW</span>
+              </NavList.TrailingVisual>
+            )}
+          </NavList.Item>
+        ))}
+      </NavList>
+    </div>
+  );
+}
 
 export function WorkspaceShell({ section }: { section: Section }) {
   const router = useRouter();
@@ -167,26 +225,32 @@ export function WorkspaceShell({ section }: { section: Section }) {
           Developer workspace <span>Personal</span>
         </Text>
       </div>
-      <Text className="nav-caption">WORKSPACE</Text>
-      <NavList aria-label="Workspace navigation" className="main-navigation">
-        {navigation.map((item) => (
-          <NavList.Item
-            key={item.id}
-            href={item.href}
-            aria-current={section === item.id ? "page" : undefined}
-          >
-            <NavList.LeadingVisual>
-              <item.icon />
-            </NavList.LeadingVisual>
-            {item.label}
-            {item.id === "generative" && (
-              <NavList.TrailingVisual>
-                <span className="new-tag">NEW</span>
-              </NavList.TrailingVisual>
-            )}
-          </NavList.Item>
+      <div className="navigation-groups">
+        {navigationGroups.map((group) => (
+          <NavigationGroup
+            key={group.label}
+            label={group.label}
+            items={group.items}
+            section={section}
+          />
         ))}
-      </NavList>
+        <div className="navigation-group">
+          <Text className="nav-caption">GIT</Text>
+          <a
+            className="git-navigation"
+            href={gitRepositoryUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <MarkGithubIcon size={18} />
+            <span className="git-navigation-copy">
+              <span>ai-origin</span>
+              <span>GitHub repository</span>
+            </span>
+            <ArrowUpRightIcon size={16} />
+          </a>
+        </div>
+      </div>
       <div className="sidebar-bottom">
         <div className="sidebar-note">
           <span className="sidebar-note-icon">
@@ -208,29 +272,6 @@ export function WorkspaceShell({ section }: { section: Section }) {
             Explore the docs
           </Button>
         </div>
-        <NavList aria-label="Support navigation">
-          <NavList.Item
-            href="/docs"
-            aria-current={section === "docs" ? "page" : undefined}
-          >
-            <NavList.LeadingVisual>
-              <BookIcon />
-            </NavList.LeadingVisual>
-            Documentation
-            <NavList.TrailingVisual>
-              <ArrowUpRightIcon />
-            </NavList.TrailingVisual>
-          </NavList.Item>
-          <NavList.Item
-            href="/settings"
-            aria-current={section === "settings" ? "page" : undefined}
-          >
-            <NavList.LeadingVisual>
-              <GearIcon />
-            </NavList.LeadingVisual>
-            Settings
-          </NavList.Item>
-        </NavList>
         <a href="/settings" className="user-profile">
           <span className="profile-avatar">O</span>
           <Stack direction="vertical" gap="none">
@@ -372,34 +413,40 @@ export function WorkspaceShell({ section }: { section: Section }) {
           title="AI Origin navigation"
           onClose={() => setMobileOpen(false)}
         >
-          <NavList aria-label="Mobile navigation">
-            {[
-              ...navigation,
-              {
-                id: "settings",
-                href: "/settings",
-                label: "Settings",
-                icon: GearIcon,
-              },
-              {
-                id: "docs",
-                href: "/docs",
-                label: "Documentation",
-                icon: BookIcon,
-              },
-            ].map((item) => (
-              <NavList.Item
-                key={item.id}
-                href={item.href}
-                aria-current={section === item.id ? "page" : undefined}
-              >
-                <NavList.LeadingVisual>
-                  <item.icon />
-                </NavList.LeadingVisual>
-                {item.label}
-              </NavList.Item>
+          <Stack direction="vertical" gap="normal">
+            {navigationGroups.map((group) => (
+              <NavigationGroup
+                key={group.label}
+                label={group.label}
+                items={group.items}
+                section={section}
+              />
             ))}
-          </NavList>
+            <div className="navigation-group">
+              <Text className="nav-caption">WORKSPACE</Text>
+              <NavList aria-label="Workspace settings">
+                <NavList.Item
+                  href="/settings"
+                  aria-current={section === "settings" ? "page" : undefined}
+                >
+                  <NavList.LeadingVisual>
+                    <GearIcon />
+                  </NavList.LeadingVisual>
+                  Settings
+                </NavList.Item>
+              </NavList>
+            </div>
+            <a
+              className="mobile-git-navigation"
+              href={gitRepositoryUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <MarkGithubIcon size={18} />
+              <span>Open ai-origin repository</span>
+              <ArrowUpRightIcon size={16} />
+            </a>
+          </Stack>
         </Dialog>
       )}
       {searchOpen && (

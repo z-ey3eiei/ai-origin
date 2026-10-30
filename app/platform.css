@@ -4,6 +4,24 @@
   font-size: var(--text-body-size-medium);
   overscroll-behavior-y: none;
 }
+[data-component="Dialog"] {
+  border: var(--borderWidth-thin) solid var(--origin-border-strong) !important;
+  background: #131d2b !important;
+  box-shadow: var(--origin-shadow) !important;
+  color: var(--origin-text);
+}
+[data-component="Dialog.Header"],
+[data-component="Dialog.Body"] {
+  background: #131d2b;
+}
+body:has([data-component="Dialog"]) .app-shell {
+  position: relative;
+  z-index: 0;
+}
+body:has([data-component="Dialog"]) .topbar,
+body:has([data-component="Dialog"]) .mobile-dock {
+  z-index: 0;
+}
 a {
   color: inherit;
   text-decoration: none;
@@ -147,6 +165,70 @@ kbd {
   letter-spacing: 0.1em;
   padding: 0 var(--base-size-12) var(--base-size-12);
   font-weight: var(--base-text-weight-medium);
+}
+.navigation-groups {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--base-size-16);
+  overflow-y: auto;
+  padding-right: var(--base-size-4);
+  scrollbar-width: thin;
+}
+.navigation-group {
+  flex: none;
+}
+.git-navigation,
+.mobile-git-navigation {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-12);
+  border: var(--borderWidth-thin) solid var(--origin-border);
+  border-radius: var(--borderRadius-medium);
+  padding: var(--base-size-8) var(--base-size-12);
+  color: var(--fgColor-muted);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: var(--text-body-size-small);
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+.git-navigation {
+  margin: 0 var(--base-size-4);
+}
+.git-navigation-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--base-size-2);
+}
+.git-navigation-copy span:first-child {
+  color: var(--fgColor-default);
+  font-weight: var(--base-text-weight-semibold);
+}
+.git-navigation-copy span:last-child {
+  font-size: var(--text-caption-size);
+}
+.git-navigation > svg:last-child,
+.mobile-git-navigation > svg:last-child {
+  margin-left: auto;
+}
+.git-navigation:hover,
+.mobile-git-navigation:hover {
+  border-color: var(--origin-border-strong);
+  color: var(--fgColor-default);
+  background: var(--origin-accent-soft);
+}
+.git-navigation:active,
+.mobile-git-navigation:active {
+  transform: scale(0.98);
+}
+.mobile-git-navigation {
+  margin-top: var(--base-size-16);
 }
 .main-navigation li {
   margin-bottom: var(--base-size-4);
@@ -1263,6 +1345,15 @@ kbd {
     padding: var(--base-size-40);
   }
 }
+@media (max-height: 960px) and (min-width: 761px) {
+  .sidebar-note {
+    display: none;
+  }
+  .sidebar-bottom {
+    padding-top: var(--base-size-16);
+  }
+}
+
 @media (max-width: 1200px) {
   .sidebar {
     width: calc(var(--base-size-128) + var(--base-size-80));
