@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ActionList,
@@ -98,6 +98,7 @@ export function WorkspaceShell({ section }: { section: Section }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -113,6 +114,27 @@ export function WorkspaceShell({ section }: { section: Section }) {
     setSearchOpen(false);
     setMobileOpen(false);
     router.push(href);
+  };
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches.item(0);
+    if (!touch || window.innerWidth > 760) return;
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    const touch = event.changedTouches.item(0);
+    touchStartRef.current = null;
+    if (!start || !touch || window.innerWidth > 760) return;
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (
+      !mobileOpen &&
+      start.x <= 32 &&
+      deltaX >= 72 &&
+      Math.abs(deltaY) <= 44
+    ) {
+      setMobileOpen(true);
+    }
   };
   const sidebar = (
     <>
@@ -222,7 +244,11 @@ export function WorkspaceShell({ section }: { section: Section }) {
   );
 
   return (
-    <div className="app-shell">
+    <div
+      className="app-shell"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -256,10 +282,15 @@ export function WorkspaceShell({ section }: { section: Section }) {
               Search anything… <kbd>⌘ K</kbd>
             </Button>
             <span className="topbar-divider" />
-            <span className="environment-badge">
+            <button
+              type="button"
+              className="environment-control"
+              onClick={() => go("/infrastructure")}
+              aria-label="Open Development infrastructure status"
+            >
               <span className="status-dot" />
-              Development
-            </span>
+              <span>Development</span>
+            </button>
             <IconButton
               icon={BellIcon}
               aria-label="Workspace activity"
@@ -296,6 +327,28 @@ export function WorkspaceShell({ section }: { section: Section }) {
             <Documentation />
           )}
         </main>
+        <nav className="mobile-dock" aria-label="Primary navigation">
+          {navigation.slice(0, 3).map((item) => (
+            <a
+              key={item.id}
+              href={item.href}
+              aria-current={section === item.id ? "page" : undefined}
+              className="mobile-dock-item"
+            >
+              <item.icon size={18} />
+              <span>{item.label}</span>
+            </a>
+          ))}
+          <button
+            type="button"
+            className="mobile-dock-item"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open more workspace navigation"
+          >
+            <ThreeBarsIcon size={18} />
+            <span>More</span>
+          </button>
+        </nav>
         <footer className="page-footer">
           <span>
             <span className="status-dot" /> AI Origin workspace

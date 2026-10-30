@@ -18,6 +18,21 @@
 @import "@primer/primitives/dist/css/functional/themes/dark.css";
 @import "@primer/primitives/dist/css/functional/themes/dark-dimmed.css";
 
+:root {
+  color-scheme: dark;
+  --origin-canvas: #0b1018;
+  --origin-panel: rgba(14, 21, 32, 0.9);
+  --origin-panel-elevated: rgba(19, 29, 43, 0.96);
+  --origin-border: rgba(166, 190, 221, 0.14);
+  --origin-border-strong: rgba(132, 164, 205, 0.26);
+  --origin-text: #f1f5fb;
+  --origin-text-muted: #93a1b5;
+  --origin-accent: #79a9ff;
+  --origin-accent-soft: rgba(72, 132, 244, 0.14);
+  --origin-status: #8ed6ae;
+  --origin-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -27,8 +42,14 @@
 html,
 body {
   min-height: 100vh;
-  background-color: var(--bgColor-default);
-  color: var(--fgColor-default);
+  background:
+    radial-gradient(
+      circle at 85% -15%,
+      rgba(68, 114, 202, 0.18),
+      transparent 38%
+    ),
+    var(--origin-canvas);
+  color: var(--origin-text);
   font-family: var(
     --fontStack-system,
     -apple-system,
@@ -36,6 +57,8 @@ body {
     "Segoe UI",
     sans-serif
   );
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #__next {

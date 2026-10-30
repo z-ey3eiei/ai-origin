@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import {
   Button,
@@ -211,28 +212,14 @@ export function Overview() {
             </a>
           </Stack>
         </Stack>
-        <div className="orbital-art" aria-hidden="true">
-          <div className="orbit orbit-outer" />
-          <div className="orbit orbit-middle" />
-          <div className="orbit orbit-inner" />
-          <div className="orbit-core">
-            <NorthStarIcon size={44} />
-          </div>
-          <span className="orbit-node node-a">
-            <CpuIcon size={22} />
-          </span>
-          <span className="orbit-node node-b">
-            <CodeIcon size={20} />
-          </span>
-          <span className="orbit-node node-c">
-            <DatabaseIcon size={20} />
-          </span>
-          <span className="orbit-point point-a" />
-          <span className="orbit-point point-b" />
-          <span className="orbit-point point-c" />
-          <span className="orbit-label">
-            ONE GATEWAY. INFINITE POSSIBILITIES.
-          </span>
+        <div className="brand-hero-visual" aria-hidden="true">
+          <Image
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 760px) 0px, 48vw"
+            src="/images/oneorigin-hero.jpg"
+          />
         </div>
       </section>
       <Stack
