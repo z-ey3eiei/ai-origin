@@ -1,7 +1,40 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 const base = process.env.TEST_BASE_URL || "http://localhost:3000";
 const request = (path, options) => fetch(`${base}${path}`, options);
+const packageJson = JSON.parse(
+  await readFile(new URL("../package.json", import.meta.url), "utf8"),
+);
+const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+const releaseResponse = await request("/api/release");
+assert.equal(releaseResponse.status, 200);
+const release = await releaseResponse.json();
+assert.equal(release.version, packageJson.version);
+assert.equal(release.name, "ONEORIGIN Workspace");
+assert(readme.includes(`${release.name} v${release.version}`));
+
+if (release.publicReadOnly) {
+  for (const [path, method] of [
+    ["/api/chat", "POST"],
+    ["/api/generate", "POST"],
+    ["/api/upload", "POST"],
+    ["/api/settings", "PUT"],
+    ["/api/knowledge", "POST"],
+    ["/api/knowledge", "DELETE"],
+    ["/api/knowledge?q=test", "GET"],
+  ]) {
+    for (const headers of [{}, { Origin: new URL(base).origin }]) {
+      const response = await request(path, { method, headers });
+      assert.equal(
+        response.status,
+        403,
+        `${method} ${path} must be blocked before any provider or storage operation`,
+      );
+      assert.match((await response.json()).error, /Public Beta is read-only/);
+    }
+  }
+}
 
 const ecosystem = await request("/ecosystem", { redirect: "manual" });
 assert.equal(
@@ -22,6 +55,8 @@ for (const repository of [
 assert.match(ecosystemHtml, /External link/);
 assert.match(ecosystemHtml, /Before production/);
 assert.match(ecosystemHtml, /Export JSON/);
+assert(ecosystemHtml.includes(`v${release.version}`));
+assert(ecosystemHtml.includes(release.name));
 
 const models = await (await request("/api/models")).json();
 assert(models.models.length > 0, "Live model catalog must contain models");
@@ -36,7 +71,11 @@ const invalid = await request("/api/chat", {
     sessionId: "invalid",
   }),
 });
-assert.equal(invalid.status, 400, "Invalid prompts must not reach inference");
+assert.equal(
+  invalid.status,
+  release.publicReadOnly ? 403 : 400,
+  "Invalid prompts must not reach inference",
+);
 
 const crossOrigin = await request("/api/settings", {
   method: "PUT",
@@ -59,7 +98,7 @@ const oversized = await request("/api/chat", {
 });
 assert.equal(
   oversized.status,
-  400,
+  release.publicReadOnly ? 403 : 400,
   "Oversized request bodies must be rejected",
 );
 
@@ -85,5 +124,5 @@ console.log(
   "PASS: public tools hub and repository links, live catalog, validation, request limits, origin protection, private cookies, and infrastructure status.",
 );
 console.log(
-  "These checks do not run paid inference, write AWS records, or prove production readiness.",
+  `PASS: release ${release.version} matches package.json, README, and app; public read-only mode: ${release.publicReadOnly}. These checks do not run paid inference, write AWS records, or prove full production readiness.`,
 );

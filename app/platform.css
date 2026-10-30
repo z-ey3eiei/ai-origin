@@ -999,8 +999,19 @@ kbd {
   padding: var(--base-size-12) var(--base-size-24);
   border-top: var(--borderWidth-thin) solid var(--borderColor-muted);
 }
+.public-beta-notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-size-8);
+  padding: var(--base-size-16);
+  border: var(--borderWidth-thin) solid var(--borderColor-attention-muted);
+  border-radius: var(--borderRadius-medium);
+  background: var(--bgColor-attention-muted);
+  line-height: 1.8;
+}
 .page-footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: var(--base-size-16);

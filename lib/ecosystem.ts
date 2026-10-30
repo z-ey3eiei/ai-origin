@@ -6,7 +6,9 @@ export const ecosystem = {
   reviewedOn: "2026-10-31",
   scope:
     "Public entrypoints and repository metadata only; not an end-to-end or security audit.",
-  productionApproval: "required",
+  productionApproval: "public-read-only-beta-approved",
+  approvalScope:
+    "Public read-only release only; full AI and data mutation readiness remains unverified.",
   projects: [
     {
       id: "devstack",
@@ -107,10 +109,10 @@ export const ecosystem = {
     },
     {
       id: "release",
-      title: "อนุมัติก่อน production",
-      status: "awaiting-user-approval",
+      title: "ขอบเขตการเผยแพร่",
+      status: "read-only-beta-approved",
       detail:
-        "ตรวจ build, E2E, quota และ rollback ให้ครบ เก็บงานบน working branch ไม่ merge หรือ deploy production จนกว่าเจ้าของยืนยัน",
+        "เจ้าของอนุมัติเผยแพร่รอบนี้เป็น Public Beta แบบอ่านอย่างเดียว ยังไม่เปิด AI หรือแก้ข้อมูลสาธารณะจนกว่า login, สิทธิ์ provider และ abuse controls ผ่าน และไม่ merge main อัตโนมัติ",
     },
   ],
 } as const;

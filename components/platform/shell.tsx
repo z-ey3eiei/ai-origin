@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { oneoriginWordmark } from "@/lib/ecosystem";
+import { release } from "@/lib/release";
 import { Ecosystem } from "./ecosystem";
 import {
   ActionList,
@@ -360,6 +361,21 @@ export function WorkspaceShell({ section }: { section: Section }) {
           </Stack>
         </header>
         <main id="main-content" className="page-content">
+          {release.publicReadOnly && (
+            <section
+              className="public-beta-notice"
+              aria-label="Public Beta access"
+              lang="th"
+            >
+              <Text weight="semibold">
+                {release.name} · v{release.version}
+              </Text>
+              <Text>
+                Public Beta · ดูหน้าเว็บได้ แต่ยังปิดการส่ง AI, ค้นความรู้,
+                อัปโหลด และแก้ข้อมูล จนกว่าจะตรวจ login และสิทธิ์ provider ผ่าน
+              </Text>
+            </section>
+          )}
           {section === "overview" ? (
             <Overview />
           ) : section === "playground" ? (
@@ -406,7 +422,7 @@ export function WorkspaceShell({ section }: { section: Section }) {
         </nav>
         <footer className="page-footer">
           <span>
-            <span className="status-dot" /> ONEORIGIN workspace
+            <span className="status-dot" /> {release.name}
           </span>
           <Stack direction="horizontal" gap="normal">
             <Text>Built with Next.js · Powered by AWS</Text>
@@ -418,7 +434,12 @@ export function WorkspaceShell({ section }: { section: Section }) {
             >
               <MarkGithubIcon size={16} />
             </a>
-            <Text className="version-label">v1.0.0</Text>
+            <Text
+              className="version-label"
+              title={`${release.name} · ${release.channel}`}
+            >
+              {`v${release.version}`}
+            </Text>
           </Stack>
         </footer>
       </div>

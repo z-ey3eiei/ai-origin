@@ -153,8 +153,8 @@ export function Ecosystem() {
                 <Text weight="semibold">{gate.title}</Text>
                 <Text className="muted small-text">{gate.detail}</Text>
                 <Text className="ecosystem-gate-state small-text">
-                  {gate.status === "awaiting-user-approval"
-                    ? "รอเจ้าของยืนยัน"
+                  {gate.status === "read-only-beta-approved"
+                    ? "อนุมัติเฉพาะ Public Beta แบบอ่านอย่างเดียว"
                     : "ยังไม่ได้ตรวจยืนยัน"}
                 </Text>
               </Stack>
