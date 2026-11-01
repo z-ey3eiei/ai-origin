@@ -1,6 +1,8 @@
 import "server-only";
-import { awsCredentialsProvider } from "@vercel/functions/oidc";
-import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
+import {
+  fromEnv,
+  fromNodeProviderChain,
+} from "@aws-sdk/credential-providers";
 
 const prefixes = {
   dynamo: "aws_one_ai_",
@@ -13,14 +15,24 @@ export function awsValue(service: AWSService, name: string) {
   return process.env[`${prefixes[service]}${name}`] || process.env[name];
 }
 
+/**
+ * Resolve AWS SDK client config for the current runtime.
+ *
+ * Cloudflare Workers / local: set AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
+ * (optional AWS_SESSION_TOKEN). Prefixed marketplace vars still work via awsValue.
+ *
+ * AWS Lambda / SST: falls back to the default credential provider chain
+ * (execution role). Vercel OIDC (@vercel/functions/oidc) is intentionally
+ * not used so the same code runs on Workers.
+ */
 export function awsConfig(service: AWSService) {
   const region = awsValue(service, "AWS_REGION") || "us-east-1";
-  const roleArn = awsValue(service, "AWS_ROLE_ARN");
+  const hasStatic =
+    Boolean(process.env.AWS_ACCESS_KEY_ID) &&
+    Boolean(process.env.AWS_SECRET_ACCESS_KEY);
   return {
     region,
-    credentials: roleArn
-      ? awsCredentialsProvider({ roleArn, clientConfig: { region } })
-      : fromNodeProviderChain(),
+    credentials: hasStatic ? fromEnv() : fromNodeProviderChain(),
     maxAttempts: 2,
   };
 }
