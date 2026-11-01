@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { publicBetaMessage, release } from "@/lib/release";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const isMutation = !["GET", "HEAD", "OPTIONS"].includes(request.method);
   const isKnowledgeSearch = request.nextUrl.pathname === "/api/knowledge";
   if (release.publicReadOnly && (isMutation || isKnowledgeSearch)) {

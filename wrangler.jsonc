@@ -1,0 +1,18 @@
+/**
+ * Companion Wrangler config for the NEW Worker `oneai-origin` (*.workers.dev only).
+ * Primary deploy config for vinext is cloudflare.config.ts — keep names in sync.
+ * Do NOT change `name` to `one-origin` and do NOT add routes/custom domains for 1origin.dev.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "oneai-origin",
+  "account_id": "2d92bd5b25768fa9093d6adc0a8887fc",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": true,
+  "main": "vinext/server/fetch-handler",
+  "assets": {
+    "not_found_handling": "none"
+  }
+}

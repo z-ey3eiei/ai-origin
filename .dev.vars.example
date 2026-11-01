@@ -1,0 +1,61 @@
+# Copy to .dev.vars for local vinext/wrangler preview. Never commit real values.
+# Set the same names as Worker secrets on `oneai-origin` (not one-origin).
+
+# AWS (Workers-safe static credentials — replaces Vercel OIDC)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_SESSION_TOKEN=
+AWS_REGION=us-east-1
+AWS_ACCOUNT_ID=
+AWS_RESOURCE_ARN=
+# Optional: keep role ARN for documentation; OIDC is not used on Workers
+AWS_ROLE_ARN=
+
+# Prefixed marketplace AWS (S3 / Dynamo / OpenSearch style)
+storing_AWS_ACCESS_KEY_ID=
+storing_AWS_SECRET_ACCESS_KEY=
+storing_AWS_REGION=
+storing_AWS_ACCOUNT_ID=
+storing_AWS_RESOURCE_ARN=
+storing_AWS_ROLE_ARN=
+storing_S3_BUCKET_NAME=
+S3_VECTOR_BUCKET_NAME=
+ai_origin_product_DYNAMODB_TABLE_PARTITION_KEY=
+
+# Neon / Postgres
+DATABASE_URL=
+DATABASE_URL_UNPOOLED=
+ai_origin_dev_PGHOST=
+ai_origin_dev_PGPORT=
+ai_origin_dev_PGDATABASE=
+ai_origin_dev_PGUSER=
+ai_origin_dev_PGSSLMODE=
+
+# Upstash / Redis / QStash
+ai_origin_prod_KV_REST_API_URL=
+ai_origin_prod_KV_REST_API_TOKEN=
+ai_origin_prod_KV_REST_API_READ_ONLY_TOKEN=
+ai_origin_prod_KV_URL=
+ai_origin_prod_REDIS_URL=
+ai_origin_pro_UPSTASH_SEARCH_REST_URL=
+ai_origin_pro_UPSTASH_SEARCH_REST_TOKEN=
+ai_origin_pro_UPSTASH_SEARCH_REST_READONLY_TOKEN=
+ai_origin_pro_UPSTASH_VECTOR_REST_URL=
+ai_origin_pro_UPSTASH_VECTOR_REST_TOKEN=
+ai_origin_pro_UPSTASH_VECTOR_REST_READONLY_TOKEN=
+ai_origin_prod_tree_QSTASH_URL=
+ai_origin_prod_tree_QSTASH_TOKEN=
+ai_origin_prod_tree_QSTASH_CURRENT_SIGNING_KEY=
+ai_origin_prod_tree_QSTASH_NEXT_SIGNING_KEY=
+
+# Auth / Mux / Blob (Blob SDK not used in app code; token kept for parity)
+BETTER_AUTH_SECRET=
+BETTER_AUTH_API_KEY=
+MUX_TOKEN_ID=
+MUX_TOKEN_SECRET=
+BLOB_READ_WRITE_TOKEN=
+
+# App toggles
+ORIGIN_INFERENCE_MODE=
+
+# Skip on Workers: VERCEL_*, OIDC_*, DOPPLER_* (Doppler is Vercel integration metadata)
