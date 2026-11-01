@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { oneoriginWordmark } from "@/lib/ecosystem";
+import { release } from "@/lib/release";
+import { Ecosystem } from "./ecosystem";
 import {
   ActionList,
   ActionMenu,
   Button,
   IconButton,
-  Label,
   NavList,
   Stack,
   Text,
@@ -36,7 +39,7 @@ import {
 } from "@primer/octicons-react";
 import type { Section } from "@/lib/types";
 import { useModels, useWorkspace } from "@/lib/client";
-import { OriginMark, StatusBadge } from "./shared";
+import { StatusBadge } from "./shared";
 import { Overview } from "./overview";
 import { Playground } from "./playground";
 import {
@@ -49,7 +52,7 @@ import {
   GenerativeWorkspace,
 } from "./workspace-pages";
 
-const navigation = [
+const developerNavigation = [
   { id: "overview", label: "Overview", icon: HomeIcon, href: "/" },
   {
     id: "playground",
@@ -58,17 +61,13 @@ const navigation = [
     href: "/playground",
   },
   { id: "models", label: "Model catalog", icon: CpuIcon, href: "/models" },
+] as const;
+const cloudOpsNavigation = [
   {
     id: "knowledge",
     label: "Knowledge base",
     icon: DatabaseIcon,
     href: "/knowledge",
-  },
-  {
-    id: "generative",
-    label: "Generative UI",
-    icon: NorthStarIcon,
-    href: "/generative",
   },
   { id: "logs", label: "Request logs", icon: RowsIcon, href: "/logs" },
   {
@@ -78,6 +77,37 @@ const navigation = [
     href: "/infrastructure",
   },
 ] as const;
+const buildAndDeployNavigation = [
+  {
+    id: "ecosystem",
+    label: "Tools & projects",
+    icon: CommandPaletteIcon,
+    href: "/ecosystem",
+  },
+  {
+    id: "generative",
+    label: "Generative UI",
+    icon: NorthStarIcon,
+    href: "/generative",
+  },
+  {
+    id: "docs",
+    label: "Deployment guide",
+    icon: BookIcon,
+    href: "/docs",
+  },
+] as const;
+const navigation = [
+  ...developerNavigation,
+  ...cloudOpsNavigation,
+  ...buildAndDeployNavigation,
+] as const;
+const navigationGroups = [
+  { label: "DEVELOPER", items: developerNavigation },
+  { label: "CLOUD OPS", items: cloudOpsNavigation },
+  { label: "BUILD & DEPLOY", items: buildAndDeployNavigation },
+] as const;
+const gitRepositoryUrl = "https://github.com/z-ey3eiei/ai-origin";
 const titles: Record<Section, string> = {
   overview: "Overview",
   playground: "Playground",
@@ -88,7 +118,45 @@ const titles: Record<Section, string> = {
   infrastructure: "Infrastructure",
   settings: "Settings",
   docs: "Documentation",
+  ecosystem: "Tools & projects",
 };
+
+type NavigationItem = (typeof navigation)[number];
+
+function NavigationGroup({
+  label,
+  items,
+  section,
+}: {
+  label: string;
+  items: readonly NavigationItem[];
+  section: Section;
+}) {
+  return (
+    <div className="navigation-group">
+      <Text className="nav-caption">{label}</Text>
+      <NavList aria-label={`${label} navigation`} className="main-navigation">
+        {items.map((item) => (
+          <NavList.Item
+            key={item.id}
+            href={item.href}
+            aria-current={section === item.id ? "page" : undefined}
+          >
+            <NavList.LeadingVisual>
+              <item.icon />
+            </NavList.LeadingVisual>
+            {item.label}
+            {item.id === "generative" && (
+              <NavList.TrailingVisual>
+                <span className="new-tag">NEW</span>
+              </NavList.TrailingVisual>
+            )}
+          </NavList.Item>
+        ))}
+      </NavList>
+    </div>
+  );
+}
 
 export function WorkspaceShell({ section }: { section: Section }) {
   const router = useRouter();
@@ -98,6 +166,7 @@ export function WorkspaceShell({ section }: { section: Section }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === "k") {
@@ -114,15 +183,39 @@ export function WorkspaceShell({ section }: { section: Section }) {
     setMobileOpen(false);
     router.push(href);
   };
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches.item(0);
+    if (!touch || window.innerWidth > 760) return;
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    const touch = event.changedTouches.item(0);
+    touchStartRef.current = null;
+    if (!start || !touch || window.innerWidth > 760) return;
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (
+      !mobileOpen &&
+      start.x <= 32 &&
+      deltaX >= 72 &&
+      Math.abs(deltaY) <= 44
+    ) {
+      setMobileOpen(true);
+    }
+  };
   const sidebar = (
     <>
-      <a href="/" className="brand">
-        <OriginMark />
-        <span>
-          ai<span className="brand-dash">—</span>origin
-          <span className="brand-period">.</span>
-        </span>
-        <Label className="brand-label">BETA</Label>
+      <a href="/" className="brand" aria-label="ONEORIGIN home">
+        <Image
+          src={oneoriginWordmark}
+          alt="ONEORIGIN"
+          width={180}
+          height={60}
+          unoptimized
+          priority
+          className="brand-wordmark"
+        />
       </a>
       <div className="workspace-switcher">
         <ActionMenu>
@@ -145,26 +238,32 @@ export function WorkspaceShell({ section }: { section: Section }) {
           Developer workspace <span>Personal</span>
         </Text>
       </div>
-      <Text className="nav-caption">WORKSPACE</Text>
-      <NavList aria-label="Workspace navigation" className="main-navigation">
-        {navigation.map((item) => (
-          <NavList.Item
-            key={item.id}
-            href={item.href}
-            aria-current={section === item.id ? "page" : undefined}
-          >
-            <NavList.LeadingVisual>
-              <item.icon />
-            </NavList.LeadingVisual>
-            {item.label}
-            {item.id === "generative" && (
-              <NavList.TrailingVisual>
-                <span className="new-tag">NEW</span>
-              </NavList.TrailingVisual>
-            )}
-          </NavList.Item>
+      <div className="navigation-groups">
+        {navigationGroups.map((group) => (
+          <NavigationGroup
+            key={group.label}
+            label={group.label}
+            items={group.items}
+            section={section}
+          />
         ))}
-      </NavList>
+        <div className="navigation-group">
+          <Text className="nav-caption">GIT</Text>
+          <a
+            className="git-navigation"
+            href={gitRepositoryUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <MarkGithubIcon size={18} />
+            <span className="git-navigation-copy">
+              <span>ai-origin</span>
+              <span>GitHub repository</span>
+            </span>
+            <ArrowUpRightIcon size={16} />
+          </a>
+        </div>
+      </div>
       <div className="sidebar-bottom">
         <div className="sidebar-note">
           <span className="sidebar-note-icon">
@@ -186,29 +285,6 @@ export function WorkspaceShell({ section }: { section: Section }) {
             Explore the docs
           </Button>
         </div>
-        <NavList aria-label="Support navigation">
-          <NavList.Item
-            href="/docs"
-            aria-current={section === "docs" ? "page" : undefined}
-          >
-            <NavList.LeadingVisual>
-              <BookIcon />
-            </NavList.LeadingVisual>
-            Documentation
-            <NavList.TrailingVisual>
-              <ArrowUpRightIcon />
-            </NavList.TrailingVisual>
-          </NavList.Item>
-          <NavList.Item
-            href="/settings"
-            aria-current={section === "settings" ? "page" : undefined}
-          >
-            <NavList.LeadingVisual>
-              <GearIcon />
-            </NavList.LeadingVisual>
-            Settings
-          </NavList.Item>
-        </NavList>
         <a href="/settings" className="user-profile">
           <span className="profile-avatar">O</span>
           <Stack direction="vertical" gap="none">
@@ -222,7 +298,11 @@ export function WorkspaceShell({ section }: { section: Section }) {
   );
 
   return (
-    <div className="app-shell">
+    <div
+      className="app-shell"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -256,10 +336,15 @@ export function WorkspaceShell({ section }: { section: Section }) {
               Search anything… <kbd>⌘ K</kbd>
             </Button>
             <span className="topbar-divider" />
-            <span className="environment-badge">
+            <button
+              type="button"
+              className="environment-control"
+              onClick={() => go("/infrastructure")}
+              aria-label="Open Development infrastructure status"
+            >
               <span className="status-dot" />
-              Development
-            </span>
+              <span>Development</span>
+            </button>
             <IconButton
               icon={BellIcon}
               aria-label="Workspace activity"
@@ -276,6 +361,21 @@ export function WorkspaceShell({ section }: { section: Section }) {
           </Stack>
         </header>
         <main id="main-content" className="page-content">
+          {release.publicReadOnly && (
+            <section
+              className="public-beta-notice"
+              aria-label="Public Beta access"
+              lang="th"
+            >
+              <Text weight="semibold">
+                {release.name} · v{release.version}
+              </Text>
+              <Text>
+                Public Beta · ดูหน้าเว็บได้ แต่ยังปิดการส่ง AI, ค้นความรู้,
+                อัปโหลด และแก้ข้อมูล จนกว่าจะตรวจ login และสิทธิ์ provider ผ่าน
+              </Text>
+            </section>
+          )}
           {section === "overview" ? (
             <Overview />
           ) : section === "playground" ? (
@@ -292,13 +392,37 @@ export function WorkspaceShell({ section }: { section: Section }) {
             <Infrastructure />
           ) : section === "settings" ? (
             <Settings />
+          ) : section === "ecosystem" ? (
+            <Ecosystem />
           ) : (
             <Documentation />
           )}
         </main>
+        <nav className="mobile-dock" aria-label="Primary navigation">
+          {navigation.slice(0, 3).map((item) => (
+            <a
+              key={item.id}
+              href={item.href}
+              aria-current={section === item.id ? "page" : undefined}
+              className="mobile-dock-item"
+            >
+              <item.icon size={18} />
+              <span>{item.label}</span>
+            </a>
+          ))}
+          <button
+            type="button"
+            className="mobile-dock-item"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open more workspace navigation"
+          >
+            <ThreeBarsIcon size={18} />
+            <span>More</span>
+          </button>
+        </nav>
         <footer className="page-footer">
           <span>
-            <span className="status-dot" /> AI Origin workspace
+            <span className="status-dot" /> {release.name}
           </span>
           <Stack direction="horizontal" gap="normal">
             <Text>Built with Next.js · Powered by AWS</Text>
@@ -306,47 +430,58 @@ export function WorkspaceShell({ section }: { section: Section }) {
               href="https://github.com/z-ey3eiei/ai-origin"
               target="_blank"
               rel="noreferrer"
-              aria-label="AI Origin on GitHub"
+              aria-label="ONEORIGIN on GitHub"
             >
               <MarkGithubIcon size={16} />
             </a>
-            <Text className="version-label">v1.0.0</Text>
+            <Text
+              className="version-label"
+              title={`${release.name} · ${release.channel}`}
+            >
+              {`v${release.version}`}
+            </Text>
           </Stack>
         </footer>
       </div>
       {mobileOpen && (
         <Dialog
-          title="AI Origin navigation"
+          title="ONEORIGIN navigation"
           onClose={() => setMobileOpen(false)}
         >
-          <NavList aria-label="Mobile navigation">
-            {[
-              ...navigation,
-              {
-                id: "settings",
-                href: "/settings",
-                label: "Settings",
-                icon: GearIcon,
-              },
-              {
-                id: "docs",
-                href: "/docs",
-                label: "Documentation",
-                icon: BookIcon,
-              },
-            ].map((item) => (
-              <NavList.Item
-                key={item.id}
-                href={item.href}
-                aria-current={section === item.id ? "page" : undefined}
-              >
-                <NavList.LeadingVisual>
-                  <item.icon />
-                </NavList.LeadingVisual>
-                {item.label}
-              </NavList.Item>
+          <Stack direction="vertical" gap="normal">
+            {navigationGroups.map((group) => (
+              <NavigationGroup
+                key={group.label}
+                label={group.label}
+                items={group.items}
+                section={section}
+              />
             ))}
-          </NavList>
+            <div className="navigation-group">
+              <Text className="nav-caption">WORKSPACE</Text>
+              <NavList aria-label="Workspace settings">
+                <NavList.Item
+                  href="/settings"
+                  aria-current={section === "settings" ? "page" : undefined}
+                >
+                  <NavList.LeadingVisual>
+                    <GearIcon />
+                  </NavList.LeadingVisual>
+                  Settings
+                </NavList.Item>
+              </NavList>
+            </div>
+            <a
+              className="mobile-git-navigation"
+              href={gitRepositoryUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <MarkGithubIcon size={18} />
+              <span>Open ai-origin repository</span>
+              <ArrowUpRightIcon size={16} />
+            </a>
+          </Stack>
         </Dialog>
       )}
       {searchOpen && (
