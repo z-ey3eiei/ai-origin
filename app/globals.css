@@ -18,6 +18,9 @@
 @import "@primer/primitives/dist/css/functional/themes/dark.css";
 @import "@primer/primitives/dist/css/functional/themes/dark-dimmed.css";
 
+/* next-video-starter typography (DM Sans + JetBrains Mono) */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
 @font-face {
   font-family: "Noto Sans Thai";
   src: url("/fonts/noto-sans-thai.woff2") format("woff2");
@@ -28,22 +31,25 @@
 }
 
 :root {
-  --fontStack-system:
-    "Noto Sans Thai", "Mona Sans VF", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji";
+  --font-sans: "DM Sans", "Noto Sans Thai", "Mona Sans VF", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+  --fontStack-system: var(--font-sans);
   color-scheme: dark;
-  --origin-canvas: #0b1018;
-  --origin-panel: rgba(14, 21, 32, 0.9);
-  --origin-panel-elevated: rgba(19, 29, 43, 0.96);
-  --origin-border: rgba(166, 190, 221, 0.14);
-  --origin-border-strong: rgba(132, 164, 205, 0.26);
-  --origin-text: #f1f5fb;
-  --origin-text-muted: #93a1b5;
+  /* Starter-aligned dark canvas (#0a0a0a) with ONEORIGIN blue accents */
+  --origin-canvas: #0a0a0a;
+  --origin-panel: rgba(14, 14, 14, 0.92);
+  --origin-panel-elevated: rgba(22, 22, 22, 0.96);
+  --origin-border: rgba(255, 255, 255, 0.12);
+  --origin-border-strong: rgba(255, 255, 255, 0.2);
+  --origin-text: #ededed;
+  --origin-text-muted: rgba(237, 237, 237, 0.62);
   --origin-accent: #79a9ff;
   --origin-accent-soft: rgba(72, 132, 244, 0.14);
   --origin-status: #8ed6ae;
-  --origin-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+  --origin-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -58,8 +64,8 @@ body {
   background:
     radial-gradient(
       circle at 85% -15%,
-      rgba(68, 114, 202, 0.18),
-      transparent 38%
+      rgba(68, 114, 202, 0.12),
+      transparent 42%
     ),
     var(--origin-canvas);
   color: var(--origin-text);

@@ -36,6 +36,7 @@ import {
   ThreeBarsIcon,
   MarkGithubIcon,
   CommandPaletteIcon,
+  DeviceCameraVideoIcon,
 } from "@primer/octicons-react";
 import type { Section } from "@/lib/types";
 import { useModels, useWorkspace } from "@/lib/client";
@@ -61,6 +62,12 @@ const developerNavigation = [
     href: "/playground",
   },
   { id: "models", label: "Model catalog", icon: CpuIcon, href: "/models" },
+  {
+    id: "video",
+    label: "Video",
+    icon: DeviceCameraVideoIcon,
+    href: "/video",
+  },
 ] as const;
 const cloudOpsNavigation = [
   {

@@ -26,6 +26,7 @@
     "@aws-sdk/credential-providers": "^3.1160.0",
     "@aws-sdk/lib-dynamodb": "^3.1160.0",
     "@aws-sdk/s3-request-presigner": "^3.1160.0",
+    "@mux/mux-player-react": "^3.14.1",
     "@opensearch-project/opensearch": "^3.9.0",
     "@primer/octicons-react": "^19.28.1",
     "@primer/primitives": "^11.9.0",
